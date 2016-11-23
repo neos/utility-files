@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\Flow\Utility;
+namespace Neos\Utility\Exception;
 
 /*
  * This file is part of the TYPO3.Flow package.
@@ -16,6 +16,6 @@ namespace TYPO3\Flow\Utility;
  *
  * @api
  */
-class Exception extends \Exception
+class FilesException extends \Exception
 {
 }

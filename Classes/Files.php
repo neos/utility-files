@@ -1,5 +1,5 @@
 <?php
-namespace TYPO3\Flow\Utility;
+namespace Neos\Utility;
 
 /*
  * This file is part of the TYPO3.Flow package.
@@ -12,6 +12,7 @@ namespace TYPO3\Flow\Utility;
  */
 
 use TYPO3\Flow\Error\Exception as ErrorException;
+use Neos\Utility\Exception\FilesException;
 
 /**
  * File and directory functions
@@ -136,19 +137,19 @@ abstract class Files
      *
      * @param string $path Path to the directory which shall be emptied.
      * @return void
-     * @throws Exception
+     * @throws FilesException
      * @see removeDirectoryRecursively()
      * @api
      */
     public static function emptyDirectoryRecursively($path)
     {
         if (!is_dir($path)) {
-            throw new Exception('"' . $path . '" is no directory.', 1169047616);
+            throw new FilesException('"' . $path . '" is no directory.', 1169047616);
         }
 
         if (self::is_link($path)) {
             if (self::unlink($path) !== true) {
-                throw new Exception('Could not unlink symbolic link "' . $path . '".', 1323697654);
+                throw new FilesException('Could not unlink symbolic link "' . $path . '".', 1323697654);
             }
         } else {
             $directoryIterator = new \RecursiveDirectoryIterator($path);
@@ -175,14 +176,14 @@ abstract class Files
      * @return void
      * @see removeDirectoryRecursively()
      * @api
-     * @throws Exception
+     * @throws FilesException
      */
     public static function removeEmptyDirectoriesOnPath($path, $basePath = null)
     {
         if ($basePath !== null) {
             $basePath = trim($basePath, '/');
             if (strpos($path, $basePath) !== 0) {
-                throw new Exception(sprintf('Could not remove empty directories on path because the given base path "%s" is not a parent path of "%s".', $basePath, $path), 1323962907);
+                throw new FilesException(sprintf('Could not remove empty directories on path because the given base path "%s" is not a parent path of "%s".', $basePath, $path), 1323962907);
             }
         }
         foreach (array_reverse(explode('/', $path)) as $currentSegment) {
@@ -206,7 +207,7 @@ abstract class Files
      *
      * @param  string $path Path to the directory which shall be removed completely.
      * @return void
-     * @throws Exception
+     * @throws FilesException
      * @see emptyDirectoryRecursively()
      * @api
      */
@@ -214,16 +215,16 @@ abstract class Files
     {
         if (self::is_link($path)) {
             if (self::unlink($path) !== true) {
-                throw new Exception('Could not unlink symbolic link "' . $path . '".', 1316000297);
+                throw new FilesException('Could not unlink symbolic link "' . $path . '".', 1316000297);
             }
         } else {
             self::emptyDirectoryRecursively($path);
             try {
                 if (rmdir($path) !== true) {
-                    throw new Exception('Could not remove directory "' . $path . '".', 1316000298);
+                    throw new FilesException('Could not remove directory "' . $path . '".', 1316000298);
                 }
             } catch (\Exception $exception) {
-                throw new Exception('Could not remove directory "' . $path . '".', 1323961907);
+                throw new FilesException('Could not remove directory "' . $path . '".', 1323961907);
             }
         }
     }
@@ -234,7 +235,7 @@ abstract class Files
      *
      * @param string $path Path to the directory which shall be created
      * @return void
-     * @throws Exception
+     * @throws FilesException
      * @todo Make mode configurable / make umask configurable
      * @api
      */
@@ -244,14 +245,14 @@ abstract class Files
             $path = substr($path, 0, -1);
         }
         if (is_file($path)) {
-            throw new Exception('Could not create directory "' . $path . '", because a file with that name exists!', 1349340620);
+            throw new FilesException('Could not create directory "' . $path . '", because a file with that name exists!', 1349340620);
         }
         if (!is_link($path) && !is_dir($path) && $path !== '') {
             $oldMask = umask(000);
             mkdir($path, 0777, true);
             umask($oldMask);
             if (!is_dir($path)) {
-                throw new Exception('Could not create directory "' . $path . '"!', 1170251400);
+                throw new FilesException('Could not create directory "' . $path . '"!', 1170251400);
             }
         }
     }
@@ -271,18 +272,18 @@ abstract class Files
      * @param boolean $keepExistingFiles
      * @param boolean $copyDotFiles
      * @return void
-     * @throws Exception
+     * @throws FilesException
      * @api
      */
     public static function copyDirectoryRecursively($sourceDirectory, $targetDirectory, $keepExistingFiles = false, $copyDotFiles = false)
     {
         if (!is_dir($sourceDirectory)) {
-            throw new Exception('"' . $sourceDirectory . '" is no directory.', 1235428779);
+            throw new FilesException('"' . $sourceDirectory . '" is no directory.', 1235428779);
         }
 
         self::createDirectoryRecursively($targetDirectory);
         if (!is_dir($targetDirectory)) {
-            throw new Exception('"' . $targetDirectory . '" is no directory.', 1235428780);
+            throw new FilesException('"' . $targetDirectory . '" is no directory.', 1235428780);
         }
 
         foreach (self::getRecursiveDirectoryGenerator($sourceDirectory, null, false, $copyDotFiles) as $filename) {
@@ -458,7 +459,7 @@ abstract class Files
      *
      * @param string $sizeString the human-readable size string (e.g. ini_get('upload_max_filesize'))
      * @return float The number of bytes the $sizeString represents or 0 if the number could not be parsed
-     * @throws Exception if the specified unit could not be resolved
+     * @throws FilesException if the specified unit could not be resolved
      */
     public static function sizeStringToBytes($sizeString)
     {
@@ -476,7 +477,7 @@ abstract class Files
         }
         $pow = array_search($unit, self::$sizeUnits, true);
         if ($pow === false) {
-            throw new Exception(sprintf('Unknown file size unit "%s"', $matches['unit']), 1417695299);
+            throw new FilesException(sprintf('Unknown file size unit "%s"', $matches['unit']), 1417695299);
         }
         return $size * pow(2, (10 * $pow));
     }
@@ -488,7 +489,7 @@ abstract class Files
      * @param string $target The absolute target where the the symlink should point to relativiely
      * @param string $link The absolute path to the link where the symlink will be created
      * @return boolean
-     * @throws \TYPO3\Flow\Exception
+     * @throws FilesException
      */
     public static function createRelativeSymlink($target, $link)
     {
@@ -504,7 +505,7 @@ abstract class Files
             // See https://bugs.php.net/bug.php?id=69473 and http://www.howtogeek.com/howto/16226/complete-guide-to-symbolic-links-symlinks-on-windows-or-linux/
             exec(sprintf('mklink %s %s %s', $flag, escapeshellarg($link), escapeshellarg($relativeTargetPath)), $output, $return);
             if ($return !== 0) {
-                throw new \TYPO3\Flow\Exception(sprintf('Error while attempting to create a relative symlink at "%s" pointing to "%s". Make sure you have sufficient privileges and your operating system supports symlinks.', $link, $relativeTargetPath), 1378986321);
+                throw new FilesException(sprintf('Error while attempting to create a relative symlink at "%s" pointing to "%s". Make sure you have sufficient privileges and your operating system supports symlinks.', $link, $relativeTargetPath), 1378986321);
             }
             return file_exists($link);
         } else {
