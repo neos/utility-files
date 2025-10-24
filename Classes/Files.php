@@ -439,16 +439,19 @@ abstract class Files
     /**
      * Converts an integer with a byte count into human-readable form
      *
-     * @param integer|null $decimals number of decimal places in the resulting string
+     * @param float|int $bytes
+     * @param int|null $decimals number of decimal places in the resulting string
      * @param string|null $decimalSeparator decimal separator of the resulting string
      * @param string|null $thousandsSeparator thousands separator of the resulting string
      * @return string the size string, e.g. "1,024 MB"
      */
-    public static function bytesToSizeString(float|int|string $bytes, ?int $decimals = null, ?string $decimalSeparator = null, ?string $thousandsSeparator = null): string
+    public static function bytesToSizeString($bytes, ?int $decimals = null, ?string $decimalSeparator = null, ?string $thousandsSeparator = null): string
     {
+        /** @phpstan-ignore booleanAnd.alwaysFalse (annotations may be wrong) */
         if (!is_int($bytes) && !is_float($bytes)) {
             if (is_numeric($bytes)) {
                 $bytes = (float)$bytes;
+                /** @phpstan-ignore else.unreachable (annotations may be wrong) */
             } else {
                 $bytes = 0;
             }
