@@ -171,7 +171,7 @@ class FilesTest extends \PHPUnit\Framework\TestCase
 
     /**
      */
-    public function pathsWithProtocol()
+    public static function pathsWithProtocol()
     {
         return [
             ['file:///foo\\bar', 'file:///foo/bar'],
@@ -464,7 +464,7 @@ class FilesTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array
      */
-    public function bytesToSizeStringDataProvider()
+    public static function bytesToSizeStringDataProvider()
     {
         return [
 
@@ -583,7 +583,7 @@ class FilesTest extends \PHPUnit\Framework\TestCase
     /**
      * @return array
      */
-    public function sizeStringToBytesDataProvider()
+    public static function sizeStringToBytesDataProvider()
     {
         return [
 
