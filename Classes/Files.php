@@ -122,7 +122,14 @@ abstract class Files
                     if (is_dir($pathAndFilename)) {
                         array_push($directories, self::getNormalizedPath($pathAndFilename));
                     } elseif ($suffix === null || strpos(strrev($filename), strrev($suffix)) === 0) {
-                        yield static::getUnixStylePath(($returnRealPath === true) ? realpath($pathAndFilename) ?: '' : $pathAndFilename);
+                        if ($returnRealPath) {
+                            $nonRealPathAndFilename = $pathAndFilename;
+                            $pathAndFilename = realpath($pathAndFilename);
+                            if ($pathAndFilename === false) {
+                                throw new \RuntimeException(sprintf('Cannot get realpath for "%s". $returnRealPath cannot be used with stream wrappers.', $nonRealPathAndFilename), 1765548187);
+                            }
+                        }
+                        yield static::getUnixStylePath($pathAndFilename);
                     }
                 }
                 closedir($handle);
