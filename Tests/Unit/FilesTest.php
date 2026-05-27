@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Neos\Flow\Tests\Unit\Utility;
 
 /*
@@ -18,7 +21,7 @@ use Neos\Utility\Files;
 /**
  * Testcase for the Utility Files class
  */
-class FilesTest extends \PHPUnit\Framework\TestCase
+final class FilesTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var string
@@ -66,7 +69,7 @@ class FilesTest extends \PHPUnit\Framework\TestCase
     public function getUnixStylePathWorksForPathWithoutSlashes()
     {
         $path = 'foobar';
-        self::assertEquals('foobar', Files::getUnixStylePath($path));
+        self::assertSame('foobar', Files::getUnixStylePath($path));
     }
 
     /**
@@ -75,7 +78,7 @@ class FilesTest extends \PHPUnit\Framework\TestCase
     public function getUnixStylePathWorksForPathWithForwardSlashes()
     {
         $path = 'foo/bar/test/';
-        self::assertEquals('foo/bar/test/', Files::getUnixStylePath($path));
+        self::assertSame('foo/bar/test/', Files::getUnixStylePath($path));
     }
 
     /**
@@ -84,7 +87,7 @@ class FilesTest extends \PHPUnit\Framework\TestCase
     public function getUnixStylePathWorksForPathWithBackwardSlashes()
     {
         $path = 'foo\\bar\\test\\';
-        self::assertEquals('foo/bar/test/', Files::getUnixStylePath($path));
+        self::assertSame('foo/bar/test/', Files::getUnixStylePath($path));
     }
 
     /**
@@ -93,7 +96,7 @@ class FilesTest extends \PHPUnit\Framework\TestCase
     public function getUnixStylePathWorksForPathWithForwardAndBackwardSlashes()
     {
         $path = 'foo/bar\\test/';
-        self::assertEquals('foo/bar/test/', Files::getUnixStylePath($path));
+        self::assertSame('foo/bar/test/', Files::getUnixStylePath($path));
     }
 
     /**
@@ -101,7 +104,7 @@ class FilesTest extends \PHPUnit\Framework\TestCase
      */
     public function concatenatePathsWorksForEmptyPath()
     {
-        self::assertEquals('', Files::concatenatePaths([]));
+        self::assertSame('', Files::concatenatePaths([]));
     }
 
     /**
@@ -109,7 +112,7 @@ class FilesTest extends \PHPUnit\Framework\TestCase
      */
     public function concatenatePathsWorksForOnePath()
     {
-        self::assertEquals('foo', Files::concatenatePaths(['foo']));
+        self::assertSame('foo', Files::concatenatePaths(['foo']));
     }
 
     /**
@@ -117,7 +120,7 @@ class FilesTest extends \PHPUnit\Framework\TestCase
      */
     public function concatenatePathsWorksForTwoPath()
     {
-        self::assertEquals('foo/bar', Files::concatenatePaths(['foo', 'bar']));
+        self::assertSame('foo/bar', Files::concatenatePaths(['foo', 'bar']));
     }
 
     /**
@@ -125,7 +128,7 @@ class FilesTest extends \PHPUnit\Framework\TestCase
      */
     public function concatenatePathsWorksForPathsWithLeadingSlash()
     {
-        self::assertEquals('/foo/bar', Files::concatenatePaths(['/foo', 'bar']));
+        self::assertSame('/foo/bar', Files::concatenatePaths(['/foo', 'bar']));
     }
 
     /**
@@ -133,7 +136,7 @@ class FilesTest extends \PHPUnit\Framework\TestCase
      */
     public function concatenatePathsWorksForPathsWithTrailingSlash()
     {
-        self::assertEquals('foo/bar', Files::concatenatePaths(['foo', 'bar/']));
+        self::assertSame('foo/bar', Files::concatenatePaths(['foo', 'bar/']));
     }
 
     /**
@@ -141,7 +144,7 @@ class FilesTest extends \PHPUnit\Framework\TestCase
      */
     public function concatenatePathsWorksForPathsWithLeadingAndTrailingSlash()
     {
-        self::assertEquals('/foo/bar/bar/foo', Files::concatenatePaths(['/foo/bar/', '/bar/foo/']));
+        self::assertSame('/foo/bar/bar/foo', Files::concatenatePaths(['/foo/bar/', '/bar/foo/']));
     }
 
     /**
@@ -149,7 +152,7 @@ class FilesTest extends \PHPUnit\Framework\TestCase
      */
     public function concatenatePathsWorksForBrokenPaths()
     {
-        self::assertEquals('/foo/bar/bar', Files::concatenatePaths(['\\foo/bar\\', '\\bar']));
+        self::assertSame('/foo/bar/bar', Files::concatenatePaths(['\\foo/bar\\', '\\bar']));
     }
 
     /**
@@ -157,7 +160,7 @@ class FilesTest extends \PHPUnit\Framework\TestCase
      */
     public function concatenatePathsWorksForEmptyPathArrayElements()
     {
-        self::assertEquals('foo/bar', Files::concatenatePaths(['foo', '', 'bar']));
+        self::assertSame('foo/bar', Files::concatenatePaths(['foo', '', 'bar']));
     }
 
     /**
@@ -166,18 +169,16 @@ class FilesTest extends \PHPUnit\Framework\TestCase
     public function getUnixStylePathWorksForPathWithDriveLetterAndBackwardSlashes()
     {
         $path = 'c:\\foo\\bar\\test\\';
-        self::assertEquals('c:/foo/bar/test/', Files::getUnixStylePath($path));
+        self::assertSame('c:/foo/bar/test/', Files::getUnixStylePath($path));
     }
 
     /**
      */
-    public static function pathsWithProtocol()
+    public static function pathsWithProtocol(): \Iterator
     {
-        return [
-            ['file:///foo\\bar', 'file:///foo/bar'],
-            ['vfs:///foo\\bar', 'vfs:///foo/bar'],
-            ['phar:///foo\\bar', 'phar:///foo/bar']
-        ];
+        yield ['file:///foo\\bar', 'file:///foo/bar'];
+        yield ['vfs:///foo\\bar', 'vfs:///foo/bar'];
+        yield ['phar:///foo\\bar', 'phar:///foo/bar'];
     }
 
     /**
@@ -290,7 +291,7 @@ class FilesTest extends \PHPUnit\Framework\TestCase
     {
         Files::createDirectoryRecursively('vfs://Foo/Bar/Baz/Quux');
         Files::removeEmptyDirectoriesOnPath('vfs://Foo/Bar/Baz/Quux');
-        self::assertFalse(file_exists('vfs://Foo'));
+        self::assertFileNotExists('vfs://Foo');
     }
 
     /**
@@ -301,8 +302,8 @@ class FilesTest extends \PHPUnit\Framework\TestCase
         Files::createDirectoryRecursively('vfs://Foo/Bar/Baz/Quux');
         file_put_contents('vfs://Foo/Bar/someFile.txt', 'x');
         Files::removeEmptyDirectoriesOnPath('vfs://Foo/Bar/Baz/Quux');
-        self::assertTrue(file_exists('vfs://Foo/Bar/someFile.txt'));
-        self::assertFalse(file_exists('vfs://Foo/Bar/Baz'));
+        self::assertFileExists('vfs://Foo/Bar/someFile.txt');
+        self::assertFileNotExists('vfs://Foo/Bar/Baz');
     }
 
     /**
@@ -313,7 +314,7 @@ class FilesTest extends \PHPUnit\Framework\TestCase
         Files::createDirectoryRecursively('vfs://Foo/Bar/Baz/Quux');
         file_put_contents('vfs://Foo/Bar/Baz/Quux/someFile.txt', 'x');
         Files::removeEmptyDirectoriesOnPath('vfs://Foo/Bar/Baz/Quux');
-        self::assertTrue(file_exists('vfs://Foo/Bar/Baz/Quux/someFile.txt'));
+        self::assertFileExists('vfs://Foo/Bar/Baz/Quux/someFile.txt');
     }
 
     /**
@@ -325,8 +326,8 @@ class FilesTest extends \PHPUnit\Framework\TestCase
         file_put_contents('vfs://Foo/Bar/someFile.txt', 'x');
         file_put_contents('vfs://Foo/Bar/Baz/.DS_Store', 'x');
         Files::removeEmptyDirectoriesOnPath('vfs://Foo/Bar/Baz/Quux');
-        self::assertTrue(file_exists('vfs://Foo/Bar/someFile.txt'));
-        self::assertFalse(file_exists('vfs://Foo/Bar/Baz'));
+        self::assertFileExists('vfs://Foo/Bar/someFile.txt');
+        self::assertFileNotExists('vfs://Foo/Bar/Baz');
     }
 
     /**
@@ -336,13 +337,13 @@ class FilesTest extends \PHPUnit\Framework\TestCase
     {
         Files::createDirectoryRecursively('vfs://Foo/Bar/Baz/Quux');
         Files::removeEmptyDirectoriesOnPath('vfs://Foo/Bar/Baz/Quux', 'vfs://Foo/Bar');
-        self::assertFalse(file_exists('vfs://Foo/Bar/Baz'));
-        self::assertTrue(file_exists('vfs://Foo/Bar'));
+        self::assertFileNotExists('vfs://Foo/Bar/Baz');
+        self::assertFileExists('vfs://Foo/Bar');
 
         Files::createDirectoryRecursively('vfs://Foo/Bar/Baz/Quux');
         Files::removeEmptyDirectoriesOnPath('vfs://Foo/Bar/Baz/Quux', 'vfs://Foo/Bar/');
-        self::assertFalse(file_exists('vfs://Foo/Bar/Baz'));
-        self::assertTrue(file_exists('vfs://Foo/Bar'));
+        self::assertFileNotExists('vfs://Foo/Bar/Baz');
+        self::assertFileExists('vfs://Foo/Bar');
     }
 
     /**
@@ -368,8 +369,8 @@ class FilesTest extends \PHPUnit\Framework\TestCase
         }
         $this->trySymlink($targetPathAndFilename, $linkPathAndFilename);
         self::assertTrue(Files::unlink($linkPathAndFilename));
-        self::assertTrue(file_exists($targetPathAndFilename));
-        self::assertFalse(file_exists($linkPathAndFilename));
+        self::assertFileExists($targetPathAndFilename);
+        self::assertFileNotExists($linkPathAndFilename);
     }
 
     /**
@@ -387,8 +388,8 @@ class FilesTest extends \PHPUnit\Framework\TestCase
         }
         $this->trySymlink($targetPath, $linkPath);
         self::assertTrue(Files::unlink($linkPath));
-        self::assertTrue(file_exists($targetPath));
-        self::assertFalse(file_exists($linkPath));
+        self::assertFileExists($targetPath);
+        self::assertFileNotExists($linkPath);
     }
 
     /**
@@ -411,9 +412,9 @@ class FilesTest extends \PHPUnit\Framework\TestCase
 
         Files::copyDirectoryRecursively('vfs://Foo/source', 'vfs://Foo/target');
 
-        self::assertTrue(is_dir('vfs://Foo/target/bar/baz'));
+        self::assertDirectoryExists('vfs://Foo/target/bar/baz');
         self::assertTrue(is_file('vfs://Foo/target/bar/baz/file.txt'));
-        self::assertEquals('source content', file_get_contents('vfs://Foo/target/bar/baz/file.txt'));
+        self::assertSame('source content', file_get_contents('vfs://Foo/target/bar/baz/file.txt'));
     }
 
     /**
@@ -426,9 +427,9 @@ class FilesTest extends \PHPUnit\Framework\TestCase
 
         Files::copyDirectoryRecursively('vfs://Foo/source', 'vfs://Foo/target', false, true);
 
-        self::assertTrue(is_dir('vfs://Foo/target/bar/baz'));
+        self::assertDirectoryExists('vfs://Foo/target/bar/baz');
         self::assertTrue(is_file('vfs://Foo/target/bar/baz/.file.txt'));
-        self::assertEquals('source content', file_get_contents('vfs://Foo/target/bar/baz/.file.txt'));
+        self::assertSame('source content', file_get_contents('vfs://Foo/target/bar/baz/.file.txt'));
     }
 
     /**
@@ -443,7 +444,7 @@ class FilesTest extends \PHPUnit\Framework\TestCase
         file_put_contents('vfs://Foo/target/bar/baz/file.txt', 'target content');
 
         Files::copyDirectoryRecursively('vfs://Foo/source', 'vfs://Foo/target');
-        self::assertEquals('source content', file_get_contents('vfs://Foo/target/bar/baz/file.txt'));
+        self::assertSame('source content', file_get_contents('vfs://Foo/target/bar/baz/file.txt'));
     }
 
     /**
@@ -458,110 +459,106 @@ class FilesTest extends \PHPUnit\Framework\TestCase
         file_put_contents('vfs://Foo/target/bar/baz/file.txt', 'target content');
 
         Files::copyDirectoryRecursively('vfs://Foo/source', 'vfs://Foo/target', true);
-        self::assertEquals('target content', file_get_contents('vfs://Foo/target/bar/baz/file.txt'));
+        self::assertSame('target content', file_get_contents('vfs://Foo/target/bar/baz/file.txt'));
     }
 
     /**
-     * @return array
+     * @return \Iterator<(int | string), mixed>
      */
-    public static function bytesToSizeStringDataProvider()
+    public static function bytesToSizeStringDataProvider(): \Iterator
     {
-        return [
-
-            // invalid values
-            [
-                'bytes' => 'invalid',
-                'decimals' => null,
-                'decimalSeparator' => null,
-                'thousandsSeparator' => null,
-                'expected' => '0 B'
-            ],
-            [
-                'bytes' => '-100',
-                'decimals' => 2,
-                'decimalSeparator' => null,
-                'thousandsSeparator' => null,
-                'expected' => '0.00 B'
-            ],
-            [
-                'bytes' => -100,
-                'decimals' => 2,
-                'decimalSeparator' => null,
-                'thousandsSeparator' => null,
-                'expected' => '0.00 B'
-            ],
-            [
-                'bytes' => '',
-                'decimals' => 2,
-                'decimalSeparator' => null,
-                'thousandsSeparator' => null,
-                'expected' => '0.00 B'
-            ],
-            [
-                'bytes' => [],
-                'decimals' => 2,
-                'decimalSeparator' => ',',
-                'thousandsSeparator' => null,
-                'expected' => '0,00 B'
-            ],
-
-            // valid values
-            [
-                'bytes' => 123,
-                'decimals' => null,
-                'decimalSeparator' => null,
-                'thousandsSeparator' => null,
-                'expected' => '123 B'
-            ],
-            [
-                'bytes' => '43008',
-                'decimals' => 1,
-                'decimalSeparator' => null,
-                'thousandsSeparator' => null,
-                'expected' => '42.0 KB'
-            ],
-            [
-                'bytes' => 1024,
-                'decimals' => 1,
-                'decimalSeparator' => null,
-                'thousandsSeparator' => null,
-                'expected' => '1.0 KB'
-            ],
-            [
-                'bytes' => 1023,
-                'decimals' => 2,
-                'decimalSeparator' => null,
-                'thousandsSeparator' => null,
-                'expected' => '1,023.00 B'
-            ],
-            [
-                'bytes' => 1073741823,
-                'decimals' => null,
-                'decimalSeparator' => null,
-                'thousandsSeparator' => null,
-                'expected' => '1,024 MB'
-            ],
-            [
-                'bytes' => 1073741823,
-                'decimals' => 1,
-                'decimalSeparator' => null,
-                'thousandsSeparator' => '.',
-                'expected' => '1.024.0 MB'
-            ],
-            [
-                'bytes' => pow(1024, 5),
-                'decimals' => 1,
-                'decimalSeparator' => null,
-                'thousandsSeparator' => null,
-                'expected' => '1.0 PB'
-            ],
-            [
-                'bytes' => pow(1024, 8),
-                'decimals' => 1,
-                'decimalSeparator' => null,
-                'thousandsSeparator' => null,
-                'expected' => '1.0 YB'
-            ]
+        // invalid values
+        yield [
+            'bytes' => 'invalid',
+            'decimals' => null,
+            'decimalSeparator' => null,
+            'thousandsSeparator' => null,
+            'expected' => '0 B'
+        ];
+        yield [
+            'bytes' => '-100',
+            'decimals' => 2,
+            'decimalSeparator' => null,
+            'thousandsSeparator' => null,
+            'expected' => '0.00 B'
+        ];
+        yield [
+            'bytes' => -100,
+            'decimals' => 2,
+            'decimalSeparator' => null,
+            'thousandsSeparator' => null,
+            'expected' => '0.00 B'
+        ];
+        yield [
+            'bytes' => '',
+            'decimals' => 2,
+            'decimalSeparator' => null,
+            'thousandsSeparator' => null,
+            'expected' => '0.00 B'
+        ];
+        yield [
+            'bytes' => [],
+            'decimals' => 2,
+            'decimalSeparator' => ',',
+            'thousandsSeparator' => null,
+            'expected' => '0,00 B'
+        ];
+        // valid values
+        yield [
+            'bytes' => 123,
+            'decimals' => null,
+            'decimalSeparator' => null,
+            'thousandsSeparator' => null,
+            'expected' => '123 B'
+        ];
+        yield [
+            'bytes' => '43008',
+            'decimals' => 1,
+            'decimalSeparator' => null,
+            'thousandsSeparator' => null,
+            'expected' => '42.0 KB'
+        ];
+        yield [
+            'bytes' => 1024,
+            'decimals' => 1,
+            'decimalSeparator' => null,
+            'thousandsSeparator' => null,
+            'expected' => '1.0 KB'
+        ];
+        yield [
+            'bytes' => 1023,
+            'decimals' => 2,
+            'decimalSeparator' => null,
+            'thousandsSeparator' => null,
+            'expected' => '1,023.00 B'
+        ];
+        yield [
+            'bytes' => 1073741823,
+            'decimals' => null,
+            'decimalSeparator' => null,
+            'thousandsSeparator' => null,
+            'expected' => '1,024 MB'
+        ];
+        yield [
+            'bytes' => 1073741823,
+            'decimals' => 1,
+            'decimalSeparator' => null,
+            'thousandsSeparator' => '.',
+            'expected' => '1.024.0 MB'
+        ];
+        yield [
+            'bytes' => pow(1024, 5),
+            'decimals' => 1,
+            'decimalSeparator' => null,
+            'thousandsSeparator' => null,
+            'expected' => '1.0 PB'
+        ];
+        yield [
+            'bytes' => pow(1024, 8),
+            'decimals' => 1,
+            'decimalSeparator' => null,
+            'thousandsSeparator' => null,
+            'expected' => '1.0 YB'
         ];
     }
 
@@ -581,63 +578,59 @@ class FilesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @return array
+     * @return \Iterator<(int | string), mixed>
      */
-    public static function sizeStringToBytesDataProvider()
+    public static function sizeStringToBytesDataProvider(): \Iterator
     {
-        return [
-
-            // invalid values
-            [
-                'sizeString' => 'invalid',
-                'expected' => 0.0
-            ],
-            [
-                'sizeString' => '',
-                'expected' => 0.0
-            ],
-            [
-                'sizeString' => false,
-                'expected' => 0.0
-            ],
-
-            // valid values
-            [
-                'sizeString' => '12345',
-                'expected' => 12345.0
-            ],
-            [
-                'sizeString' => '54321 b',
-                'expected' => 54321.0
-            ],
-            [
-                'sizeString' => '1024M',
-                'expected' => 1073741824.0
-            ],
-            [
-                'sizeString' => '1024.0 MB',
-                'expected' => 1073741824.0
-            ],
-            [
-                'sizeString' => '500 MB',
-                'expected' => 524288000.0
-            ],
-            [
-                'sizeString' => '500m',
-                'expected' => 524288000.0
-            ],
-            [
-                'sizeString' => '1.0 KB',
-                'expected' => 1024.0
-            ],
-            [
-                'sizeString' => '1 GB',
-                'expected' => (float)pow(1024, 3)
-            ],
-            [
-                'sizeString' => '1 Z',
-                'expected' => (float)pow(1024, 7)
-            ]
+        // invalid values
+        yield [
+            'sizeString' => 'invalid',
+            'expected' => 0.0
+        ];
+        yield [
+            'sizeString' => '',
+            'expected' => 0.0
+        ];
+        yield [
+            'sizeString' => false,
+            'expected' => 0.0
+        ];
+        // valid values
+        yield [
+            'sizeString' => '12345',
+            'expected' => 12345.0
+        ];
+        yield [
+            'sizeString' => '54321 b',
+            'expected' => 54321.0
+        ];
+        yield [
+            'sizeString' => '1024M',
+            'expected' => 1073741824.0
+        ];
+        yield [
+            'sizeString' => '1024.0 MB',
+            'expected' => 1073741824.0
+        ];
+        yield [
+            'sizeString' => '500 MB',
+            'expected' => 524288000.0
+        ];
+        yield [
+            'sizeString' => '500m',
+            'expected' => 524288000.0
+        ];
+        yield [
+            'sizeString' => '1.0 KB',
+            'expected' => 1024.0
+        ];
+        yield [
+            'sizeString' => '1 GB',
+            'expected' => (float)pow(1024, 3)
+        ];
+        yield [
+            'sizeString' => '1 Z',
+            'expected' => (float)pow(1024, 7)
         ];
     }
 
