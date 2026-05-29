@@ -13,7 +13,9 @@ namespace Neos\Flow\Tests\Unit\Utility;
  * information, please view the LICENSE file which was distributed with this
  * source code.
  */
-
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Neos\Utility\Exception\FilesException;
 use org\bovigo\vfs\vfsStream;
 use Neos\Utility\Files;
@@ -21,7 +23,7 @@ use Neos\Utility\Files;
 /**
  * Testcase for the Utility Files class
  */
-final class FilesTest extends \PHPUnit\Framework\TestCase
+final class FilesTest extends TestCase
 {
     /**
      * @var string
@@ -63,109 +65,83 @@ final class FilesTest extends \PHPUnit\Framework\TestCase
         }
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getUnixStylePathWorksForPathWithoutSlashes()
     {
         $path = 'foobar';
         self::assertSame('foobar', Files::getUnixStylePath($path));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getUnixStylePathWorksForPathWithForwardSlashes()
     {
         $path = 'foo/bar/test/';
         self::assertSame('foo/bar/test/', Files::getUnixStylePath($path));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getUnixStylePathWorksForPathWithBackwardSlashes()
     {
         $path = 'foo\\bar\\test\\';
         self::assertSame('foo/bar/test/', Files::getUnixStylePath($path));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getUnixStylePathWorksForPathWithForwardAndBackwardSlashes()
     {
         $path = 'foo/bar\\test/';
         self::assertSame('foo/bar/test/', Files::getUnixStylePath($path));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function concatenatePathsWorksForEmptyPath()
     {
         self::assertSame('', Files::concatenatePaths([]));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function concatenatePathsWorksForOnePath()
     {
         self::assertSame('foo', Files::concatenatePaths(['foo']));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function concatenatePathsWorksForTwoPath()
     {
         self::assertSame('foo/bar', Files::concatenatePaths(['foo', 'bar']));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function concatenatePathsWorksForPathsWithLeadingSlash()
     {
         self::assertSame('/foo/bar', Files::concatenatePaths(['/foo', 'bar']));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function concatenatePathsWorksForPathsWithTrailingSlash()
     {
         self::assertSame('foo/bar', Files::concatenatePaths(['foo', 'bar/']));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function concatenatePathsWorksForPathsWithLeadingAndTrailingSlash()
     {
         self::assertSame('/foo/bar/bar/foo', Files::concatenatePaths(['/foo/bar/', '/bar/foo/']));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function concatenatePathsWorksForBrokenPaths()
     {
         self::assertSame('/foo/bar/bar', Files::concatenatePaths(['\\foo/bar\\', '\\bar']));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function concatenatePathsWorksForEmptyPathArrayElements()
     {
         self::assertSame('foo/bar', Files::concatenatePaths(['foo', '', 'bar']));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function getUnixStylePathWorksForPathWithDriveLetterAndBackwardSlashes()
     {
         $path = 'c:\\foo\\bar\\test\\';
@@ -182,27 +158,23 @@ final class FilesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @test
      * @param string $path
      * @param string $expected
-     * @dataProvider pathsWithProtocol
      */
+    #[DataProvider('pathsWithProtocol')]
+    #[Test]
     public function getUnixStylePathWorksForPathWithProtocol($path, $expected)
     {
         self::assertEquals($expected, Files::getUnixStylePath($path));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function is_linkReturnsFalseForNonExistingFiles()
     {
         self::assertFalse(Files::is_link('NonExistingPath'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function is_linkReturnsFalseForExistingFileThatIsNoSymlink()
     {
         $targetPathAndFilename = tempnam($this->temporaryDirectory, 'FlowFilesTestFile');
@@ -210,9 +182,7 @@ final class FilesTest extends \PHPUnit\Framework\TestCase
         self::assertFalse(Files::is_link($targetPathAndFilename));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function is_linkReturnsTrueForExistingSymlink()
     {
         $targetPathAndFilename = tempnam($this->temporaryDirectory, 'FlowFilesTestFile');
@@ -225,9 +195,7 @@ final class FilesTest extends \PHPUnit\Framework\TestCase
         self::assertTrue(Files::is_link($linkPathAndFilename));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function is_linkReturnsFalseForExistingDirectoryThatIsNoSymlink()
     {
         $targetPath = Files::concatenatePaths([dirname(tempnam($this->temporaryDirectory, '')), 'FlowFilesTestDirectory']) . '/';
@@ -237,9 +205,7 @@ final class FilesTest extends \PHPUnit\Framework\TestCase
         self::assertFalse(Files::is_link($targetPath));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function is_linkReturnsTrueForExistingSymlinkDirectory()
     {
         $targetPath = Files::concatenatePaths([dirname(tempnam($this->temporaryDirectory, '')), 'FlowFilesTestDirectory']);
@@ -254,9 +220,7 @@ final class FilesTest extends \PHPUnit\Framework\TestCase
         self::assertTrue(Files::is_link($linkPath));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function is_linkReturnsFalseForStreamWrapperPaths()
     {
         $targetPath = 'vfs://Foo/Bar';
@@ -266,27 +230,21 @@ final class FilesTest extends \PHPUnit\Framework\TestCase
         self::assertFalse(Files::is_link($targetPath));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function emptyDirectoryRecursivelyThrowsExceptionIfSpecifiedPathDoesNotExist()
     {
         $this->expectException(FilesException::class);
         Files::emptyDirectoryRecursively('NonExistingPath');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function removeDirectoryRecursivelyThrowsExceptionIfSpecifiedPathDoesNotExist()
     {
         $this->expectException(FilesException::class);
         Files::removeDirectoryRecursively('NonExistingPath');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function removeEmptyDirectoriesOnPathRemovesAllDirectoriesOnPathIfTheyAreEmpty()
     {
         Files::createDirectoryRecursively('vfs://Foo/Bar/Baz/Quux');
@@ -294,9 +252,7 @@ final class FilesTest extends \PHPUnit\Framework\TestCase
         self::assertFileNotExists('vfs://Foo');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function removeEmptyDirectoriesOnPathRemovesOnlyDirectoriesWhichAreEmpty()
     {
         Files::createDirectoryRecursively('vfs://Foo/Bar/Baz/Quux');
@@ -306,9 +262,7 @@ final class FilesTest extends \PHPUnit\Framework\TestCase
         self::assertFileNotExists('vfs://Foo/Bar/Baz');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function removeEmptyDirectoriesOnPathDoesNotRemoveAnythingIfTopLevelPathContainsFile()
     {
         Files::createDirectoryRecursively('vfs://Foo/Bar/Baz/Quux');
@@ -317,9 +271,7 @@ final class FilesTest extends \PHPUnit\Framework\TestCase
         self::assertFileExists('vfs://Foo/Bar/Baz/Quux/someFile.txt');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function removeEmptyDirectoriesOnPathAlsoRemovesOSXFinderFilesIfNecessary()
     {
         Files::createDirectoryRecursively('vfs://Foo/Bar/Baz/Quux');
@@ -330,9 +282,7 @@ final class FilesTest extends \PHPUnit\Framework\TestCase
         self::assertFileNotExists('vfs://Foo/Bar/Baz');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function removeEmptyDirectoriesOnPathRemovesOnlyDirectoriesBelowTheGivenBasePath()
     {
         Files::createDirectoryRecursively('vfs://Foo/Bar/Baz/Quux');
@@ -346,9 +296,7 @@ final class FilesTest extends \PHPUnit\Framework\TestCase
         self::assertFileExists('vfs://Foo/Bar');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function removeEmptyDirectoriesOnPathThrowsExceptionIfBasePathIsNotParentOfPath()
     {
         $this->expectException(FilesException::class);
@@ -356,9 +304,7 @@ final class FilesTest extends \PHPUnit\Framework\TestCase
         Files::removeEmptyDirectoriesOnPath('vfs://Foo/Bar/Baz/Quux', 'vfs://Other/Bar');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function unlinkProperlyRemovesSymlinksPointingToFiles()
     {
         $targetPathAndFilename = tempnam($this->temporaryDirectory, 'FlowFilesTestFile');
@@ -373,9 +319,7 @@ final class FilesTest extends \PHPUnit\Framework\TestCase
         self::assertFileNotExists($linkPathAndFilename);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function unlinkProperlyRemovesSymlinksPointingToDirectories()
     {
         $targetPath = Files::concatenatePaths([dirname(tempnam($this->temporaryDirectory, '')), 'FlowFilesTestDirectory']);
@@ -393,18 +337,16 @@ final class FilesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @test
      * @outputBuffering enabled
      *     ... because the chmod call in ResourceManager emits a warning making this fail in strict mode
      */
+    #[Test]
     public function unlinkReturnsTrueIfSpecifiedPathDoesNotExist()
     {
         self::assertTrue(Files::unlink('NonExistingPath'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function copyDirectoryRecursivelyCreatesTargetAsExpected()
     {
         Files::createDirectoryRecursively('vfs://Foo/source/bar/baz');
@@ -417,9 +359,7 @@ final class FilesTest extends \PHPUnit\Framework\TestCase
         self::assertSame('source content', file_get_contents('vfs://Foo/target/bar/baz/file.txt'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function copyDirectoryRecursivelyCopiesDotFilesIfRequested()
     {
         Files::createDirectoryRecursively('vfs://Foo/source/bar/baz');
@@ -432,9 +372,7 @@ final class FilesTest extends \PHPUnit\Framework\TestCase
         self::assertSame('source content', file_get_contents('vfs://Foo/target/bar/baz/.file.txt'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function copyDirectoryRecursivelyOverwritesTargetFiles()
     {
         Files::createDirectoryRecursively('vfs://Foo/source/bar/baz');
@@ -447,9 +385,7 @@ final class FilesTest extends \PHPUnit\Framework\TestCase
         self::assertSame('source content', file_get_contents('vfs://Foo/target/bar/baz/file.txt'));
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function copyDirectoryRecursivelyKeepsExistingTargetFilesIfRequested()
     {
         Files::createDirectoryRecursively('vfs://Foo/source/bar/baz');
@@ -568,9 +504,9 @@ final class FilesTest extends \PHPUnit\Framework\TestCase
      * @param $decimalSeparator
      * @param $thousandsSeparator
      * @param $expected
-     * @test
-     * @dataProvider bytesToSizeStringDataProvider
      */
+    #[DataProvider('bytesToSizeStringDataProvider')]
+    #[Test]
     public function bytesToSizeStringTests($bytes, $decimals, $decimalSeparator, $thousandsSeparator, $expected)
     {
         $actualResult = Files::bytesToSizeString($bytes, $decimals, $decimalSeparator, $thousandsSeparator);
@@ -637,18 +573,16 @@ final class FilesTest extends \PHPUnit\Framework\TestCase
     /**
      * @param string $sizeString
      * @param float $expected
-     * @test
-     * @dataProvider sizeStringToBytesDataProvider
      */
+    #[DataProvider('sizeStringToBytesDataProvider')]
+    #[Test]
     public function sizeStringToBytesTests($sizeString, $expected)
     {
         $actualResult = Files::sizeStringToBytes($sizeString);
         self::assertSame($expected, $actualResult);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function sizeStringThrowsExceptionIfTheSpecifiedUnitIsUnknown()
     {
         $this->expectException(FilesException::class);
