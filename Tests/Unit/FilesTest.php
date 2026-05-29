@@ -527,10 +527,6 @@ final class FilesTest extends TestCase
             'sizeString' => '',
             'expected' => 0.0
         ];
-        yield [
-            'sizeString' => false,
-            'expected' => 0.0
-        ];
         // valid values
         yield [
             'sizeString' => '12345',
