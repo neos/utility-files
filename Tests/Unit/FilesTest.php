@@ -249,7 +249,7 @@ final class FilesTest extends TestCase
     {
         Files::createDirectoryRecursively('vfs://Foo/Bar/Baz/Quux');
         Files::removeEmptyDirectoriesOnPath('vfs://Foo/Bar/Baz/Quux');
-        self::assertFileNotExists('vfs://Foo');
+        self::assertFileDoesNotExist('vfs://Foo');
     }
 
     #[Test]
@@ -259,7 +259,7 @@ final class FilesTest extends TestCase
         file_put_contents('vfs://Foo/Bar/someFile.txt', 'x');
         Files::removeEmptyDirectoriesOnPath('vfs://Foo/Bar/Baz/Quux');
         self::assertFileExists('vfs://Foo/Bar/someFile.txt');
-        self::assertFileNotExists('vfs://Foo/Bar/Baz');
+        self::assertFileDoesNotExist('vfs://Foo/Bar/Baz');
     }
 
     #[Test]
@@ -279,7 +279,7 @@ final class FilesTest extends TestCase
         file_put_contents('vfs://Foo/Bar/Baz/.DS_Store', 'x');
         Files::removeEmptyDirectoriesOnPath('vfs://Foo/Bar/Baz/Quux');
         self::assertFileExists('vfs://Foo/Bar/someFile.txt');
-        self::assertFileNotExists('vfs://Foo/Bar/Baz');
+        self::assertFileDoesNotExist('vfs://Foo/Bar/Baz');
     }
 
     #[Test]
@@ -287,12 +287,12 @@ final class FilesTest extends TestCase
     {
         Files::createDirectoryRecursively('vfs://Foo/Bar/Baz/Quux');
         Files::removeEmptyDirectoriesOnPath('vfs://Foo/Bar/Baz/Quux', 'vfs://Foo/Bar');
-        self::assertFileNotExists('vfs://Foo/Bar/Baz');
+        self::assertFileDoesNotExist('vfs://Foo/Bar/Baz');
         self::assertFileExists('vfs://Foo/Bar');
 
         Files::createDirectoryRecursively('vfs://Foo/Bar/Baz/Quux');
         Files::removeEmptyDirectoriesOnPath('vfs://Foo/Bar/Baz/Quux', 'vfs://Foo/Bar/');
-        self::assertFileNotExists('vfs://Foo/Bar/Baz');
+        self::assertFileDoesNotExist('vfs://Foo/Bar/Baz');
         self::assertFileExists('vfs://Foo/Bar');
     }
 
@@ -316,7 +316,7 @@ final class FilesTest extends TestCase
         $this->trySymlink($targetPathAndFilename, $linkPathAndFilename);
         self::assertTrue(Files::unlink($linkPathAndFilename));
         self::assertFileExists($targetPathAndFilename);
-        self::assertFileNotExists($linkPathAndFilename);
+        self::assertFileDoesNotExist($linkPathAndFilename);
     }
 
     #[Test]
@@ -333,7 +333,7 @@ final class FilesTest extends TestCase
         $this->trySymlink($targetPath, $linkPath);
         self::assertTrue(Files::unlink($linkPath));
         self::assertFileExists($targetPath);
-        self::assertFileNotExists($linkPath);
+        self::assertFileDoesNotExist($linkPath);
     }
 
     /**
