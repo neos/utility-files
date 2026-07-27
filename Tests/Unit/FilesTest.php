@@ -1,4 +1,5 @@
 <?php
+
 namespace Neos\Flow\Tests\Unit\Utility;
 
 /*
@@ -12,8 +13,8 @@ namespace Neos\Flow\Tests\Unit\Utility;
  */
 
 use Neos\Utility\Exception\FilesException;
-use org\bovigo\vfs\vfsStream;
 use Neos\Utility\Files;
+use org\bovigo\vfs\vfsStream;
 
 /**
  * Testcase for the Utility Files class
